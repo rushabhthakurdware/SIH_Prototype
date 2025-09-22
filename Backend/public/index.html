@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Attendance Test</title>
+  <style>
+    body { font-family: Arial; text-align: center; padding: 50px; }
+    img { margin-top: 20px; width: 300px; height: 300px; border: 1px solid #ccc; }
+    input, button { padding: 10px; margin: 5px; }
+  </style>
+</head>
+<body>
+  <h1>QR Attendance Test</h1>
+
+  <div>
+    <input type="text" id="classId" placeholder="Enter Class ID" />
+    <button id="startBtn">Start Attendance</button>
+  </div>
+
+  <div>
+    <h2>Current QR</h2>
+    <img id="qrImage" src="" alt="QR will appear here" />
+  </div>
+
+  <script>
+    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZDE3YTc3ZjA1ZDc0Y2JiYThiNGUzYyIsInJvbGUiOiJmYWN1bHR5IiwiaWF0IjoxNzU4NTU4ODM5LCJleHAiOjE3NTg2NDUyMzl9.kZC0gZgPBozfsAVKtRhdlDaIWncTcfa0bwbDQyuPFLo";
+
+    const startBtn = document.getElementById("startBtn");
+    const classIdInput = document.getElementById("classId");
+    const qrImg = document.getElementById("qrImage");
+
+    startBtn.addEventListener("click", async () => {
+      const classId = classIdInput.value.trim();
+      if (!classId) return alert("Enter class ID");
+
+      const res = await fetch("http://localhost:3000/api/attendance/start-attendance", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify({ classId })
+      });
+
+      const data = await res.text();
+      alert(data); // Should say: "QR generation started for 10 minutes"
+    });
+
+    // Fetch latest QR every 5 seconds
+    setInterval(async () => {
+      const res = await fetch("http://localhost:3000/api/attendance/current-qr", {
+        headers: {
+          "Authorization": "Bearer " + token
+        }
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        qrImg.src = data.qrImage;
+      }
+    }, 5000);
+  </script>
+</body>
+</html>
