@@ -46,6 +46,7 @@ const App = () => {
               day: "numeric",
             })}
           </p>
+          <div>CAMERA</div>
         </div>
         <Tabs activeTab={activeTab} setActiveTab={setActiveTab} cameraActive={cameraActive} handleCameraToggle={handleCameraToggle} />
         <div className="flex flex-col lg:flex-row gap-6 items-start">{renderContent()}</div>
