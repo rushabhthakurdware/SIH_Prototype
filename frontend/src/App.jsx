@@ -23,19 +23,19 @@ const App = () => {
         return <AttendanceCharts />;
       case "od-request":
         return <ODRequestForm />;
-      // default:
-      //   return <Dashboard />;
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-100 font-sans flex flex-col">
-      <Header />
-      <div className="flex-grow p-6 mt-16">
+      {/* <Header /> */}
+      {/* <div className="flex-grow p-6 mt-16">
         <div className="flex justify-between items-center mb-6">
           <div className="text-gray-800">
             <h1 className="text-3xl font-bold">Welcome, Student!</h1>
-            <p className="text-gray-500 text-lg">Department: Computer Science</p>
+            <p className="text-gray-500 text-lg">
+              Department: Computer Science
+            </p>
           </div>
           <p className="text-gray-600 font-medium">
             Today,{" "}
@@ -46,13 +46,20 @@ const App = () => {
               day: "numeric",
             })}
           </p>
-          <div>CAMERA</div>
         </div>
-        <Tabs activeTab={activeTab} setActiveTab={setActiveTab} cameraActive={cameraActive} handleCameraToggle={handleCameraToggle} />
-        <div className="flex flex-col lg:flex-row gap-6 items-start">{renderContent()}</div>
+
         <TandPSection />
-      </div>
-      
+      </div> */}
+      <Tabs
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        cameraActive={cameraActive}
+        handleCameraToggle={handleCameraToggle}
+      />
+      {/* <div className="flex flex-col lg:flex-row gap-6 items-start">
+        {renderContent()}
+      </div> */}
+
       <Footer />
     </div>
   );
