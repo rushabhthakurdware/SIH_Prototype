@@ -6,6 +6,7 @@ import Dashboard from "./components/Dashboard";
 import AttendanceCharts from "./components/AttendanceCharts";
 import ODRequestForm from "./components/ODRequestForm";
 import TandPSection from "./components/TAndPSection";
+import RollingQR from "./pages/Teacher";
 
 const App = () => {
   const [activeTab, setActiveTab] = useState("attendance");
@@ -60,7 +61,9 @@ const App = () => {
         {renderContent()}
       </div> */}
 
-      <Footer />
+      {/* <Footer /> */}
+
+      <RollingQR />
     </div>
   );
 };
