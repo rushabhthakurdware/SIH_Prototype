@@ -15,5 +15,10 @@ module.exports.generateDynamicQR = async (className, subject) => {
 
 module.exports.validateToken = async (token) => {
   const qr = await QRCodeModel.findOne({ token });
-  return qr ? qr : null;
+  if (!qr) {
+    console.log("❌ Token not found or expired:", token);
+    return null;
+  }
+  console.log("✅ Token valid:", qr.token, qr.className, qr.subject);
+  return qr;
 };

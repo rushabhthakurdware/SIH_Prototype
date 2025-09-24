@@ -1,5 +1,7 @@
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+
 const QrCodeIcon = ({ className }) => (
   <svg
     className={className}
@@ -54,6 +56,7 @@ const FileTextIcon = ({ className }) => (
     <polyline points="10 9 9 9 8 9" />
   </svg>
 );
+
 const QrScanner = ({ onScanSuccess, onScanError }) => {
   useEffect(() => {
     if (!window.Html5QrcodeScanner || !window.Html5QrcodeScanType) {
@@ -76,14 +79,12 @@ const QrScanner = ({ onScanSuccess, onScanError }) => {
 
     return () => {
       if (html5QrcodeScanner && html5QrcodeScanner.clear) {
-        html5QrcodeScanner.clear().catch((error) => {
-          console.error("Failed to clear scanner.", error);
-        });
+        html5QrcodeScanner.clear().catch(console.error);
       }
     };
   }, [onScanSuccess, onScanError]);
 
-  return <div id="reader" className="w-full max-w-md mx-auto"></div>;
+  return <div id="reader" className="w-full max-w-md mx-auto" />;
 };
 
 const App = () => {
@@ -92,6 +93,7 @@ const App = () => {
   const [isScanning, setIsScanning] = useState(false);
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
   const [attendanceMessage, setAttendanceMessage] = useState(null);
+
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js";
@@ -99,10 +101,7 @@ const App = () => {
     script.onload = () => setIsScriptLoaded(true);
     script.onerror = () => console.error("Failed to load scanner script.");
     document.body.appendChild(script);
-
-    return () => {
-      if (script.parentNode) document.body.removeChild(script);
-    };
+    return () => script.parentNode && document.body.removeChild(script);
   }, []);
 
   const handleTabClick = (tabKey) => {
@@ -116,26 +115,25 @@ const App = () => {
   };
 
   const onScanSuccess = async (decodedText) => {
-    console.log("✅ Scan successful:", decodedText);
     setScannedData(decodedText);
     setIsScanning(false);
 
     try {
-      const qrPayload = JSON.parse(decodedText); // Expect { token, className, subject }
-      const studentId = "STUDENT123"; // TODO: replace with actual logged-in student ID
+      const qrPayload = JSON.parse(decodedText);
+      const studentId = "STUDENT123"; // Replace with actual login ID
 
       const res = await axios.post(
-        // "http://localhost:5000/api/attendance/mark",
         "https://discursively-semiformed-herschel.ngrok-free.dev/api/attendance/mark",
         {
           studentId,
           token: qrPayload.token,
+          className: qrPayload.className,
+          subject: qrPayload.subject,
         }
       );
 
       setAttendanceMessage(res.data.message);
     } catch (err) {
-      console.error("❌ Attendance marking failed:", err);
       setAttendanceMessage(
         err.response?.data?.message || "Failed to mark attendance"
       );
@@ -143,6 +141,12 @@ const App = () => {
   };
 
   const onScanError = (errorMessage) => {
+    if (
+      !errorMessage.includes("No barcode") &&
+      !errorMessage.includes("MultiFormat Readers")
+    ) {
+      console.error("Scan error:", errorMessage);
+    }
   };
 
   const handleScanAgain = () => {
@@ -194,6 +198,7 @@ const App = () => {
             </div>
           ))}
         </div>
+
         {activeTab === "dashboard" && (
           <div className="bg-white p-6 rounded-lg shadow-md">
             {!scannedData ? (
@@ -240,7 +245,6 @@ const App = () => {
                 <pre className="text-sm bg-gray-100 p-3 rounded-md inline-block">
                   {scannedData}
                 </pre>
-
                 {attendanceMessage && (
                   <p
                     className={`mt-4 font-semibold ${
@@ -252,7 +256,6 @@ const App = () => {
                     {attendanceMessage}
                   </p>
                 )}
-
                 <button
                   onClick={handleScanAgain}
                   className="mt-6 bg-gray-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-gray-700 transition-all"

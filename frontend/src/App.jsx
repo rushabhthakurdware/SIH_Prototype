@@ -29,8 +29,8 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 font-sans flex flex-col">
-      {/* <Header /> */}
-      {/* <div className="flex-grow p-6 mt-16">
+      {/* <Header />
+      <div className="flex-grow p-6 mt-16">
         <div className="flex justify-between items-center mb-6">
           <div className="text-gray-800">
             <h1 className="text-3xl font-bold">Welcome, Student!</h1>
@@ -50,7 +50,7 @@ const App = () => {
         </div>
 
         <TandPSection />
-      </div> */}
+      </div>  */}
       <Tabs
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -59,10 +59,9 @@ const App = () => {
       />
       {/* <div className="flex flex-col lg:flex-row gap-6 items-start">
         {renderContent()}
-      </div> */}
+      </div> 
 
-      {/* <Footer /> */}
-
+      <Footer /> */}
       <RollingQR />
     </div>
   );
