@@ -1,72 +1,56 @@
-import React, { useState } from "react";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
-import Tabs from "./components/Tabs";
-import Dashboard from "./components/Dashboard";
-import AttendanceCharts from "./components/AttendanceCharts";
-import ODRequestForm from "./components/ODRequestForm";
-import TandPSection from "./components/TAndPSection";
+import React, { useEffect } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useNavigate,
+} from "react-router-dom";
+import Login from "./pages/login";
 import RollingQR from "./pages/Teacher";
+import Student from "./pages/Student";
+import Admin from "./components/Admin";
+
+const ProtectedRoute = ({ children }) => {
+  const navigate = useNavigate();
+  useEffect(() => {
+    const user = localStorage.getItem("loggedInUser");
+    if (!user) {
+      navigate("/", { replace: true });
+    }
+  }, [navigate]);
+
+  return children;
+};
+
 
 const App = () => {
-  const [activeTab, setActiveTab] = useState("attendance");
-  const [cameraActive, setCameraActive] = useState(true);
-  const handleCameraToggle = () => {
-    setCameraActive(!cameraActive);
-  };
-
-
-  const renderContent = () => {
-    switch (activeTab) {
-      case "dashboard":
-        return <Dashboard />;
-      case "attendance":
-        return <AttendanceCharts />;
-      case "od-request":
-        return <ODRequestForm />;
-    }
-  };
 
   return (
-    <div className="min-h-screen bg-gray-100 font-sans flex flex-col">
-      {/* <Header />
-      <div className="flex-grow p-6 mt-16">
-        <div className="flex justify-between items-center mb-6">
-          <div className="text-gray-800">
-            <h1 className="text-3xl font-bold">Welcome, Student!</h1>
-            <p className="text-gray-500 text-lg">
-              Department: Computer Science
-            </p>
-          </div>
-          <p className="text-gray-600 font-medium">
-            Today,{" "}
-            {new Date().toLocaleDateString("en-US", {
-              weekday: "long",
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
-          </p>
-        </div>
-
-        <TandPSection />
-      </div>  */}
-      <Tabs
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        cameraActive={cameraActive}
-        handleCameraToggle={handleCameraToggle}
-      />
-      {/* <div className="flex flex-col lg:flex-row gap-6 items-start">
-        {renderContent()}
-      </div> 
-
-      <Footer /> */}
-      <RollingQR />
-    </div>
+    <>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route
+            path="/student"
+            element={
+              <div className="min-h-screen bg-gray-100 font-sans flex flex-col">
+                <Student />
+              </div>
+            }
+          />
+          <Route
+            path="/teacher"
+            element={
+              <ProtectedRoute>
+                <RollingQR />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/admin" element={<Admin />} />
+        </Routes>
+      </Router>
+    </>
   );
 };
 
 export default App;
-
-

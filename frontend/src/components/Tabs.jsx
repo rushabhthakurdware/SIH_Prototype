@@ -1,6 +1,10 @@
 
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import ODRequestForm from "./ODRequestForm";
+import AttendanceCharts from "./AttendanceCharts";
+import Header from "./Header";
+import Footer from "./Footer";
 
 const QrCodeIcon = ({ className }) => (
   <svg
@@ -174,100 +178,100 @@ const App = () => {
   ];
 
   return (
-    <div className="bg-gray-100 min-h-screen">
-      <header className="bg-white shadow-md p-4">
-        <h1 className="text-2xl font-bold text-gray-800 text-center">
-          QR Code Attendance System
-        </h1>
-      </header>
+    <>
+    <Header />
+      <div className="bg-gray-100 min-h-screen mt-[80px]">
+        <main className="p-4 md:p-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8">
+            {tabs.map((tab) => (
+              <div
+                key={tab.key}
+                onClick={() => handleTabClick(tab.key)}
+                className={`flex items-center justify-center p-4 rounded-lg shadow-sm transition-all duration-300 cursor-pointer transform hover:scale-105 ${
+                  activeTab === tab.key
+                    ? "bg-indigo-600 text-white shadow-lg"
+                    : "bg-white text-gray-700 hover:bg-gray-50"
+                }`}
+              >
+                {tab.icon}
+                <span className="font-semibold text-lg">{tab.label}</span>
+              </div>
+            ))}
+          </div>
 
-      <main className="p-4 md:p-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8">
-          {tabs.map((tab) => (
-            <div
-              key={tab.key}
-              onClick={() => handleTabClick(tab.key)}
-              className={`flex items-center justify-center p-4 rounded-lg shadow-sm transition-all duration-300 cursor-pointer transform hover:scale-105 ${
-                activeTab === tab.key
-                  ? "bg-indigo-600 text-white shadow-lg"
-                  : "bg-white text-gray-700 hover:bg-gray-50"
-              }`}
-            >
-              {tab.icon}
-              <span className="font-semibold text-lg">{tab.label}</span>
-            </div>
-          ))}
-        </div>
-
-        {activeTab === "dashboard" && (
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            {!scannedData ? (
-              isScanning ? (
-                <>
-                  <h2 className="text-center text-xl font-semibold mb-4">
-                    Point Camera at QR Code
-                  </h2>
-                  {isScriptLoaded ? (
-                    <QrScanner
-                      onScanSuccess={onScanSuccess}
-                      onScanError={onScanError}
-                    />
-                  ) : (
-                    <div className="text-center text-gray-500">
-                      Loading Scanner...
+          {activeTab === "dashboard" && (
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              {!scannedData ? (
+                isScanning ? (
+                  <>
+                    <h2 className="text-center text-xl font-semibold mb-4">
+                      Point Camera at QR Code
+                    </h2>
+                    {isScriptLoaded ? (
+                      <QrScanner
+                        onScanSuccess={onScanSuccess}
+                        onScanError={onScanError}
+                      />
+                    ) : (
+                      <div className="text-center text-gray-500">
+                        Loading Scanner...
+                      </div>
+                    )}
+                    <div className="text-center mt-4">
+                      <button
+                        onClick={() => setIsScanning(false)}
+                        className="bg-red-600 text-white font-bold py-2 px-5 rounded-lg hover:bg-red-700 transition-all"
+                      >
+                        Cancel
+                      </button>
                     </div>
-                  )}
-                  <div className="text-center mt-4">
+                  </>
+                ) : (
+                  <div className="text-center">
                     <button
-                      onClick={() => setIsScanning(false)}
-                      className="bg-red-600 text-white font-bold py-2 px-5 rounded-lg hover:bg-red-700 transition-all"
+                      onClick={() => setIsScanning(true)}
+                      className="bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-indigo-700 transition-all disabled:bg-gray-400"
+                      disabled={!isScriptLoaded}
                     >
-                      Cancel
+                      {isScriptLoaded ? "Start Scanning" : "Loading Scanner..."}
                     </button>
                   </div>
-                </>
+                )
               ) : (
                 <div className="text-center">
+                  <h2 className="text-2xl font-bold text-green-600 mb-4">
+                    Scan Successful!
+                  </h2>
+                  <pre className="text-sm bg-gray-100 p-3 rounded-md inline-block">
+                    {scannedData}
+                  </pre>
+                  {attendanceMessage && (
+                    <p
+                      className={`mt-4 font-semibold ${
+                        attendanceMessage.includes("success")
+                          ? "text-green-600"
+                          : "text-red-600"
+                      }`}
+                    >
+                      {attendanceMessage}
+                    </p>
+                  )}
                   <button
-                    onClick={() => setIsScanning(true)}
-                    className="bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-indigo-700 transition-all disabled:bg-gray-400"
-                    disabled={!isScriptLoaded}
+                    onClick={handleScanAgain}
+                    className="mt-6 bg-gray-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-gray-700 transition-all"
                   >
-                    {isScriptLoaded ? "Start Scanning" : "Loading Scanner..."}
+                    Scan Again
                   </button>
                 </div>
-              )
-            ) : (
-              <div className="text-center">
-                <h2 className="text-2xl font-bold text-green-600 mb-4">
-                  Scan Successful!
-                </h2>
-                <pre className="text-sm bg-gray-100 p-3 rounded-md inline-block">
-                  {scannedData}
-                </pre>
-                {attendanceMessage && (
-                  <p
-                    className={`mt-4 font-semibold ${
-                      attendanceMessage.includes("success")
-                        ? "text-green-600"
-                        : "text-red-600"
-                    }`}
-                  >
-                    {attendanceMessage}
-                  </p>
-                )}
-                <button
-                  onClick={handleScanAgain}
-                  className="mt-6 bg-gray-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-gray-700 transition-all"
-                >
-                  Scan Again
-                </button>
-              </div>
-            )}
-          </div>
-        )}
-      </main>
-    </div>
+              )}
+            </div>
+          )}
+          {activeTab === "od-request" && <ODRequestForm />}
+          {activeTab === "attendance" && <AttendanceCharts />}
+        </main>
+      </div>
+      <Footer />
+    </>
   );
 };
 
