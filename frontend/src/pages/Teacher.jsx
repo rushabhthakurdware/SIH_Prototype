@@ -48,7 +48,7 @@ function RollingQR() {
 
   const fetchQR = async () => {
     if (!className || !subject) return;
-    const res = await axios.get("http://localhost:5000/api/qr/generate", {
+    const res = await axios.get(`${API_BASE_URL}/api/qr/generate`, {
       params: { className, subject },
     });
     setQrData(res.data);
