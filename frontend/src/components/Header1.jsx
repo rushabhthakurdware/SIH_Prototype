@@ -1,8 +1,8 @@
 // src/components/Header.js
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import addlogo from "../UI/adminlogo.png";
-import logo from "../UI/logo.png";
+import addlogo from "../UI/stu1logo.png";
+import logo from "./logo.jpeg";
 
 const Header1 = () => {
   const navigate = useNavigate();
