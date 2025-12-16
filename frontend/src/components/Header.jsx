@@ -54,7 +54,7 @@ const Header = () => {
           />
           <div className="hidden md:flex flex-col">
             <span className="text-sm font-semibold text-gray-800">
-              Mr. Krishna Yadav
+              Mr. Samanvay Agrawal
             </span>
             <span className="text-xs text-gray-500">Students</span>
           </div>
