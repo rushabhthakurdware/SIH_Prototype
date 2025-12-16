@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+// 1. Import useNavigate
+import { useNavigate } from "react-router-dom"; 
 import {
   GraduationCap,
   BookOpen,
@@ -9,6 +11,9 @@ import {
 } from "lucide-react";
 
 const Login = () => {
+  // 2. Initialize the hook
+  const navigate = useNavigate(); 
+  
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [selectedRole, setSelectedRole] = useState("student");
@@ -47,16 +52,12 @@ const Login = () => {
     const trimmedRole = selectedRole.toLowerCase();
 
     try {
-      // NOTE: The original code used axios to make a request to a local server.
-      // We are simulating this behavior with a fetch call for this single file.
-      // In a real application, you would replace this with a real API endpoint.
+      // Simulate API call
       const response = await fetch(
         "https://jsonplaceholder.typicode.com/posts",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             username: trimmedUsername,
             password: trimmedPassword,
@@ -65,21 +66,24 @@ const Login = () => {
         }
       );
 
-      // We'll simulate success if the response is okay and a password is provided.
-      // In a real app, you would check the actual response data.
       if (response.ok && trimmedPassword.length > 0) {
         const userData = { role: trimmedRole, username: trimmedUsername };
-
-        // NOTE: The original code used localStorage. For a multi-user app,
-        // it is recommended to use Firestore for persistent storage.
+        
+        // Save to storage
         localStorage.setItem("loggedInUser", JSON.stringify(userData));
 
         setMessage({ text: "Login successful!", type: "success" });
 
-        // Redirect based on role (using window.location for a single file)
-        if (trimmedRole === "student") window.location.href = "/student";
-        else if (trimmedRole === "teacher") window.location.href = "/teacher";
-        else window.location.href = "/admin";
+        // 3. FIX: Use navigate() instead of window.location.href
+        // This keeps the user inside the app and switches pages instantly
+        if (trimmedRole === "student") {
+            navigate("/student");
+        } else if (trimmedRole === "teacher") {
+            navigate("/teacher");
+        } else {
+            navigate("/admin");
+        }
+
       } else {
         setMessage({
           text: "❌ Login failed! Check credentials.",
@@ -87,11 +91,14 @@ const Login = () => {
         });
       }
     } catch (err) {
+      console.error(err);
       setMessage({
         text: "❌ An error occurred during login. Please try again.",
         type: "error",
       });
     } finally {
+      // Note: We don't necessarily need to turn off loading if we navigated away,
+      // but it's good practice in case navigation fails.
       setIsLoading(false);
     }
   };
@@ -109,22 +116,12 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 antialiased">
-      {/* We are placing the styles here to keep the file self-contained */}
       <style>
         {`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        body {
-          font-family: 'Inter', sans-serif;
-        }
-        .bg-gradient-hero {
-          background-image: linear-gradient(to right, #4F46E5, #8B5CF6);
-        }
-        .shadow-strong {
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-        .transition-smooth {
-          transition: all 0.2s ease-in-out;
-        }
+        body { font-family: 'Inter', sans-serif; }
+        .shadow-strong { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .transition-smooth { transition: all 0.2s ease-in-out; }
         `}
       </style>
       <div className="w-full max-w-md space-y-6">
@@ -172,12 +169,8 @@ const Login = () => {
                   ))}
                 </select>
                 <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                  {selectedRole === "student" && (
-                    <GraduationCap className="h-5 w-5" />
-                  )}
-                  {selectedRole === "teacher" && (
-                    <BookOpen className="h-5 w-5" />
-                  )}
+                  {selectedRole === "student" && <GraduationCap className="h-5 w-5" />}
+                  {selectedRole === "teacher" && <BookOpen className="h-5 w-5" />}
                   {selectedRole === "admin" && <Shield className="h-5 w-5" />}
                 </div>
               </div>
@@ -186,12 +179,7 @@ const Login = () => {
             {/* Login Form */}
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
-                <label
-                  htmlFor="username"
-                  className="block text-gray-700 font-medium"
-                >
-                  Username
-                </label>
+                <label htmlFor="username" className="block text-gray-700 font-medium">Username</label>
                 <input
                   id="username"
                   type="text"
@@ -220,24 +208,13 @@ const Login = () => {
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-900 transition-smooth"
                   >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
               </div>
 
-              {/* Message box for success/error */}
               {message.text && (
-                <div
-                  className={`p-3 rounded-lg text-sm text-center ${
-                    message.type === "error"
-                      ? "bg-red-100 text-red-700"
-                      : "bg-green-100 text-green-700"
-                  }`}
-                >
+                <div className={`p-3 rounded-lg text-sm text-center ${message.type === "error" ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"}`}>
                   {message.text}
                 </div>
               )}
@@ -268,12 +245,9 @@ const Login = () => {
                   <div className="w-full border-t border-gray-200" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-white px-2 text-gray-500">
-                    Demo Credentials
-                  </span>
+                  <span className="bg-white px-2 text-gray-500">Demo Credentials</span>
                 </div>
               </div>
-
               <div className="grid grid-cols-3 gap-2">
                 {roles.map((role) => (
                   <button
@@ -286,10 +260,8 @@ const Login = () => {
                   </button>
                 ))}
               </div>
-
               <p className="text-xs text-center text-gray-500">
-                Password for all demo accounts:{" "}
-                <code className="bg-gray-100 px-1 rounded">demo123</code>
+                Password for all demo accounts: <code className="bg-gray-100 px-1 rounded">demo123</code>
               </p>
             </div>
           </div>
