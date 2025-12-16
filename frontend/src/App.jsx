@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { Navigate } from "react-router-dom";
 import {
   BrowserRouter as Router,
   Routes,
@@ -47,6 +48,8 @@ const App = () => {
             }
           />
           <Route path="/admin" element={<Admin />} />
+
+          <Route path="/index.html" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
     </>
